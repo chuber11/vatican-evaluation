@@ -1,8 +1,9 @@
 
 #for file in "data/*/audio/*.mp3";
-for file in "data/St_Peters_Feb_11_2026_asr/audio/St Peters Feb 11 2026.mp3";
+for file in data/St_Peters_Feb_11_2026_asr/audio/*.mp3;
 do
-    video=`basename "$file" .mp3` 
+    video=`echo "$file" | cut -d"/" -f2` 
+    echo $video
 
     #for model in "60:5000"; # qwen3-asr
     for model in "69:5008"; # whisper
