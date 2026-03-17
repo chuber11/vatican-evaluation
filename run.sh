@@ -11,7 +11,7 @@ do
 	echo $model
 
 	echo "offline"
-	for segmenter in SHAS SEAD;
+	for segmenter in SHAS SILERO SEAD;
 	do
 	    echo $segmenter
 

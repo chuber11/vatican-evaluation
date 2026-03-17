@@ -51,7 +51,7 @@ def hypos_to_text(f=None, data=None, lowercase=True, remove_punctuation=True):
     if lowercase:
         hypo = hypo.lower()
     if remove_punctuation:
-        hypo = re.sub(r'[^\w\s]', '', hypo)
+        hypo = re.sub(r"[^\w\s']", '', hypo)
     hypo = remove_double_spaces(hypo).strip()
 
     return hypo
@@ -79,7 +79,7 @@ def references_to_text(f=None, data=None, filter_music=True, filter_choir=True, 
     if lowercase:
         ref = ref.lower()
     if remove_punctuation:
-        ref = re.sub(r'[^\w\s]', '', ref)
+        ref = re.sub(r"[^\w\s']", '', ref)
     ref = remove_double_spaces(ref).strip()
 
     return ref

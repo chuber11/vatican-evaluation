@@ -40,8 +40,6 @@ def print_alignment(alignment, l=140):
 def calc_wer(hypothesis, reference, verbose=False):
     # Compute WER
     wer_ = wer(reference, hypothesis)
-    if verbose:
-        print(f"WER: {100*wer_:.2f}%")
 
     # Get detailed alignment
     output = process_words(reference, hypothesis)
@@ -55,8 +53,18 @@ def calc_wer(hypothesis, reference, verbose=False):
 if __name__ == "__main__":
     id = "St_Peters_Feb_11_2026_asr"
 
-    hypos_text = hypos_to_text(f"hypos/{id}-69:5008-offline-SHAS.txt")
-    references_text = references_to_text(f"data/{id}/transcription.txt")
+    model_to_server = {"whisper": "69:5008", "qwen3-asr": "60:5000"}
 
-    wer_ = calc_wer(hypos_text, references_text)
-    print(f"WER: {wer_:.2f}%")
+    for version in ["offline","online"]:
+        #for model in ["whisper","qwen3-asr"]:
+        for model in ["whisper"]:
+            for segmenter in ["SHAS","SEAD","SILERO"]:
+                try:
+                    hypos_text = hypos_to_text(f"hypos/{id}-{model_to_server[model]}-{version}-{segmenter}.txt")
+                except:
+                    continue
+                references_text = references_to_text(f"data/{id}/transcription.txt")
+
+                wer_ = calc_wer(hypos_text, references_text, verbose=False)
+                print(f"Model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
+
