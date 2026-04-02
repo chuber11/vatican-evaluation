@@ -1,3 +1,4 @@
 data/*
 hypos/*
 __pycache__/*
+*.txt

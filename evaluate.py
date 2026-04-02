@@ -51,20 +51,27 @@ def calc_wer(hypothesis, reference, verbose=False):
     return 100*wer_
 
 if __name__ == "__main__":
-    id = "St_Peters_Feb_11_2026_asr"
-
     model_to_server = {"whisper": "69:5008", "qwen3-asr": "60:5000"}
 
-    for version in ["offline","online"]:
-        #for model in ["whisper","qwen3-asr"]:
-        for model in ["whisper"]:
-            for segmenter in ["SHAS","SEAD","SILERO"]:
-                try:
-                    hypos_text = hypos_to_text(f"hypos/{id}-{model_to_server[model]}-{version}-{segmenter}.txt")
-                except:
-                    continue
-                references_text = references_to_text(f"data/{id}/transcription.txt")
+    verbose = True
 
-                wer_ = calc_wer(hypos_text, references_text, verbose=False)
-                print(f"Model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
+    ids = ["St_Peters_Feb_11_2026_asr"]
+    for id in ids:
+        references_text = references_to_text(f"data/{id}/transcription.txt")
+
+        for version in ["offline","online"]:
+            #for model in ["whisper","qwen3-asr"]:
+            for model in ["whisper"]:
+                for segmenter in ["SHAS","SEAD","SILERO"]:
+                    try:
+                        hypos_text = hypos_to_text(f"hypos/{id}-{model_to_server[model]}-{version}-{segmenter}.txt")
+                    except:
+                        continue
+
+                    wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
+                    print(f"Id: {id}, model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
+
+        hypos_text = hypos_to_text(f"hypos/{id}-translated.csv")
+        wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
+        print(f"Id: {id}, model: translated, WER: {wer_:5.2f}%")
 
