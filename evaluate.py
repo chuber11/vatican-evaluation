@@ -1,6 +1,8 @@
 
 from jiwer import wer, process_words, visualize_alignment
 from extract_data import hypos_to_text, references_to_text
+from glob import glob
+from pathlib import Path
 
 """def calculate_latency(data):
     sum_seconds = 0
@@ -51,26 +53,32 @@ def calc_wer(hypothesis, reference, verbose=False):
     return 100*wer_
 
 if __name__ == "__main__":
-    model_to_server = {"whisper": "69:5008", "qwen3-asr": "60:5000"}
+    model_to_server = {"whisper": "60:5008", "qwen3-asr": "60:5000"}
+    server_to_model = {v: k for k, v in model_to_server.items()}
 
-    verbose = True
+    verbose = False
 
     ids = ["St_Peters_Feb_11_2026_asr"]
+
+    for f in sorted(glob("hypos/*.txt")):
+        parts = Path(f).stem.split("-")
+        # filename pattern: {id}-{server}-{version}-{segmenter}-{num}
+        # server contains ':' but no '-', so splitting from the end is safe
+        num, segmenter, version, server = parts[-1], parts[-2], parts[-3], parts[-4]
+        id = "-".join(parts[:-4])
+        model = server_to_model.get(server, server)
+
+        references_text = references_to_text(f"data/{id}/transcription.txt")
+        try:
+            hypos_text = hypos_to_text(f)
+        except Exception:
+            continue
+
+        wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
+        print(f"Id: {id}, model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
+
     for id in ids:
         references_text = references_to_text(f"data/{id}/transcription.txt")
-
-        for version in ["offline","online"]:
-            #for model in ["whisper","qwen3-asr"]:
-            for model in ["whisper"]:
-                for segmenter in ["SHAS","SEAD","SILERO"]:
-                    try:
-                        hypos_text = hypos_to_text(f"hypos/{id}-{model_to_server[model]}-{version}-{segmenter}.txt")
-                    except:
-                        continue
-
-                    wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
-                    print(f"Id: {id}, model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
-
         hypos_text = hypos_to_text(f"hypos/{id}-translated.csv")
         wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
         print(f"Id: {id}, model: translated, WER: {wer_:5.2f}%")
