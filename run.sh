@@ -13,7 +13,7 @@ do
     do
 	echo $segmenter
 
-	for n in {0..4}
+	for n in {0..6}
 	do
 	    outputfile="hypos/$video-$model-online-$segmenter-$n.txt"
 	    if [ ! -f "$outputfile" ]; then

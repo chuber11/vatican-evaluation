@@ -123,8 +123,14 @@ def references_to_text(f=None, data=None, filter_music=True, filter_choir=True, 
         text = d["text"]
         if filter_music:
             text = re.sub(r"<\*\*\*music\*\*\*>.*?</\*\*\*music\*\*\*>", " ", text).strip()
+        else:
+            text = re.sub(r"<\*\*\*music\*\*\*>", " ", text).strip()
+            text = re.sub(r"</\*\*\*music\*\*\*>", " ", text).strip()
         if filter_choir:
             text = re.sub(r"<\*\*\*choir\*\*\*>.*?</\*\*\*choir\*\*\*>", " ", text).strip()
+        else:
+            text = re.sub(r"<\*\*\*choir\*\*\*>", " ", text).strip()
+            text = re.sub(r"</\*\*\*choir\*\*\*>", " ", text).strip()
         ref += text+" "
     
     if lowercase:

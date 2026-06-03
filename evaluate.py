@@ -3,6 +3,7 @@ from jiwer import wer, process_words, visualize_alignment
 from extract_data import hypos_to_text, references_to_text
 from glob import glob
 from pathlib import Path
+import sys
 
 """def calculate_latency(data):
     sum_seconds = 0
@@ -56,7 +57,8 @@ if __name__ == "__main__":
     model_to_server = {"whisper": "60:5008", "qwen3-asr": "60:5000"}
     server_to_model = {v: k for k, v in model_to_server.items()}
 
-    verbose = False
+    verbose = len(sys.argv) >= 2 and sys.argv[1] == "True"
+    filter_choir = True
 
     ids = ["St_Peters_Feb_11_2026_asr"]
 
@@ -68,14 +70,14 @@ if __name__ == "__main__":
         id = "-".join(parts[:-4])
         model = server_to_model.get(server, server)
 
-        references_text = references_to_text(f"data/{id}/transcription.txt")
+        references_text = references_to_text(f"data/{id}/transcription.txt", filter_choir=filter_choir, filter_music=True)
         try:
             hypos_text = hypos_to_text(f)
         except Exception:
             continue
 
         wer_ = calc_wer(hypos_text, references_text, verbose=verbose)
-        print(f"Id: {id}, model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, WER: {wer_:5.2f}%")
+        print(f"Id: {id}, model: {model:9s}, version: {version:7s}, segmenter: {segmenter:6s}, {num = }, WER: {wer_:5.2f}%")
 
     for id in ids:
         references_text = references_to_text(f"data/{id}/transcription.txt")
